@@ -1,0 +1,29 @@
+{
+  "name": "@snapshot-labs/keycard",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint ./src --ext .ts --fix",
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn run lint",
+    "test": "jest"
+  },
+  "dependencies": {
+    "cross-fetch": "^3.1.5"
+  },
+  "devDependencies": {
+    "@snapshot-labs/eslint-config": "^0.1.0-beta.2",
+    "@types/jest": "^27.5.0",
+    "@types/node": "^18.14.0",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.7.3"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*"
+  ]
+}
