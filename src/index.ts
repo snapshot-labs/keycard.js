@@ -4,96 +4,89 @@ import { sleep } from './utils';
 const KEYCARD_API_URL = 'https://locahost:8888';
 
 type KeycardParams = {
-  applicationId: string;
-  secret: string;
-  keycardApiUrl?: string;
+  app: string;
+  secret?: string;
+  URL?: string;
+};
+
+type AppKeys = {
+  active: string[];
+  restricted_monthly: string[];
 };
 
 export class Keycard {
-  applicationId: string;
-  secret: string;
-  keycardApiUrl: string;
-  keys: { active: string[]; restricted_daily: string[]; restricted_monthly: string[] };
+  app: string;
+  URL: string | undefined;
+  configured = false;
+  private secret: string | undefined;
+  private keys: AppKeys = {
+    active: [],
+    restricted_monthly: []
+  };
   constructor(params: KeycardParams) {
-    this.applicationId = params.applicationId;
+    this.app = params.app;
     this.secret = params.secret;
-    this.keycardApiUrl = params.keycardApiUrl || KEYCARD_API_URL;
-    this.keys = { active: [], restricted_daily: [], restricted_monthly: [] };
+    this.URL = params.URL || KEYCARD_API_URL;
+    this.checkHeader = this.checkHeader.bind(this);
+
     this.run();
   }
-  async run() {
-    const keys = await this.getKeys();
-    this.keys = keys[this.applicationId];
+  private async run() {
+    try {
+      await this.getKeys();
+      this.configured = true;
+    } catch (e) {
+      console.log(e);
+    }
     await sleep(60e3);
     this.run();
   }
-  async getKeys(): Promise<{
-    [key: string]: { active: string[]; restricted_daily: string[]; restricted_monthly: string[] };
-  }> {
-    try {
-      const response = await fetch(`${this.keycardApiUrl}/`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'x-secret': this.secret
-        },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'get_keys',
-          params: { app: this.applicationId }
-        })
-      });
-      const { result } = await response.json();
-      return { [this.applicationId]: result[this.applicationId] };
-    } catch (e) {
-      console.log('[keycard] getKeys: ', e);
-      return { [this.applicationId]: this.keys };
+  private async getKeys(): Promise<void> {
+    const { app } = this;
+    const { result, error } = await this.callAPI('get_keys');
+
+    if (error) {
+      throw new Error(error.data);
+    }
+    if (result?.[app]) {
+      console.log(
+        '[keycard] getKeys: Success! Active keys:',
+        result[app].active.length,
+        'Restricted monthly keys:',
+        result[app].restricted_monthly.length
+      );
+      this.keys = result[app];
     }
   }
-  async increaseCount(key: string) {
-    try {
-      const result = await fetch(`${this.keycardApiUrl}/`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'x-secret': this.secret
-        },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'increase_count',
-          params: { key, app: this.applicationId }
-        })
-      });
+  checkHeader(req, res, next) {
+    if (this.configured && !res.locals.ignoreKeycardCheck) {
+      const key = req.headers['x-snapshot-keycard'] || '';
+      if (!key) return res.status(401).json({ error: 'missing x-snapshot-keycard header' });
+      if (!this.keys.active.includes(key))
+        return res.status(401).json({ error: 'invalid key provided' });
+      if (this.keys.restricted_monthly.includes(key))
+        return res.status(429).json({ error: 'monthly limit reached' });
 
-      return result;
-    } catch (e) {
-      console.log('[keycard] increaseCount: ', e);
-      return false;
+      // Increase the total count for this key, but don't wait for it to finish.
+      this.callAPI('increase_total', { key }).catch(console.log);
     }
-  }
-  checkKey(key: string): {
-    active: boolean;
-    restricted_daily: boolean;
-    restricted_monthly: boolean;
-  } {
-    const { active, restricted_daily, restricted_monthly } = this.keys;
-    const result = { active: false, restricted_daily: false, restricted_monthly: false };
-    if (active.includes(key)) result.active = true;
-    if (restricted_daily.includes(key)) result.restricted_daily = true;
-    if (restricted_monthly.includes(key)) result.restricted_monthly = true;
-    this.increaseCount(key);
-    return result;
-  }
-  checkHeaderKey(req, res, next) {
-    const key = req.headers['x-key'] || '';
-    if (!key) return res.status(401).json({ error: 'missing key' });
-    const { active, restricted_daily, restricted_monthly } = this.checkKey(key);
-    if (!active) return res.status(401).json({ error: 'invalid key' });
-    if (restricted_daily) return res.status(429).json({ error: 'daily limit reached' });
-    if (restricted_monthly) return res.status(429).json({ error: 'monthly limit reached' });
-
     return next();
+  }
+  private async callAPI(method: string, params: any = {}) {
+    const { app, URL } = this;
+    const result = await fetch(`${URL}/`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        secret: this.secret || ''
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method,
+        params: { app, ...params }
+      })
+    });
+    return result.json();
   }
 }
