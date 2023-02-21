@@ -3,7 +3,7 @@
 
 ## Install
 
-To install Pineapple.js on Node.js, open your terminal and run:
+To install keycard.js on Node.js, open your terminal and run:
 
 ```bash
 npm install @snapshot-labs/keycard
