@@ -60,8 +60,8 @@ export class Keycard {
   }
   checkHeader(req, res, next) {
     if (this.configured && !res.locals.ignoreKeycardCheck) {
-      const key = req.headers['x-snapshot-keycard'] || '';
-      if (!key) return res.status(401).json({ error: 'missing x-snapshot-keycard header' });
+      const key = req.headers['x-api-key'] || '';
+      if (!key) return res.status(401).json({ error: 'missing x-api-key header' });
       if (!this.keys.active.includes(key))
         return res.status(401).json({ error: 'invalid key provided' });
       if (this.keys.restricted_monthly.includes(key))
