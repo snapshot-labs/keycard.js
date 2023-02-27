@@ -68,7 +68,7 @@ export class Keycard {
         return res.status(429).json({ error: 'monthly limit reached' });
 
       // Increase the total count for this key, but don't wait for it to finish.
-      this.callAPI('increase_total', { key }).catch(console.log);
+      this.callAPI('log_req', { key }).catch(console.log);
     }
     return next();
   }
