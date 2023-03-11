@@ -14,11 +14,18 @@
   "dependencies": {
     "cross-fetch": "^3.1.5"
   },
+  "eslintConfig": {
+    "extends": "@snapshot-labs"
+  },
+  "prettier": "@snapshot-labs/prettier-config",
   "devDependencies": {
-    "@snapshot-labs/eslint-config": "^0.1.0-beta.2",
+    "@snapshot-labs/eslint-config": "^0.1.0-beta.7",
+    "@snapshot-labs/prettier-config": "^0.1.0-beta.7",
     "@types/jest": "^27.5.0",
     "@types/node": "^18.14.0",
+    "eslint": "^8.36.0",
     "jest": "^27.5.1",
+    "prettier": "^2.8.4",
     "ts-jest": "^27.1.4",
     "typescript": "^4.7.3"
   },
