@@ -1,12 +1,13 @@
 import fetch from 'cross-fetch';
 import { sleep } from './utils';
 
-const KEYCARD_API_URL = 'https://locahost:8888';
+const API_URL = 'https://locahost:3002';
+const API_INTERVAL = 30e3;
 
 type KeycardParams = {
   app: string;
   secret?: string;
-  URL?: string;
+  URL?: string | URL;
 };
 
 type AppKeys = {
@@ -16,65 +17,68 @@ type AppKeys = {
 
 export class Keycard {
   app: string;
-  URL: string | undefined;
+  URL: string | URL;
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
     active: [],
     restricted_monthly: []
   };
+
   constructor(params: KeycardParams) {
     this.app = params.app;
     this.secret = params.secret;
-    this.URL = params.URL || KEYCARD_API_URL;
-    this.checkHeader = this.checkHeader.bind(this);
+    this.URL = params.URL || API_URL;
 
+    if (!this.secret) {
+      console.log('[keycard] No secret provided, skipping keycard.');
+      return;
+    }
     this.run();
   }
+
   private async run() {
     try {
       await this.getKeys();
       this.configured = true;
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      console.log('[keycard]', e.message || e);
     }
-    await sleep(60e3);
+    await sleep(API_INTERVAL);
     this.run();
   }
+
   private async getKeys(): Promise<void> {
     const { app } = this;
-    const { result, error } = await this.callAPI('get_keys');
+    const { result } = await this.callAPI('get_keys');
 
-    if (error) {
-      throw new Error(error.data);
-    }
     if (result?.[app]) {
-      console.log(
-        '[keycard] getKeys: Success! Active keys:',
-        result[app].active.length,
-        'Restricted monthly keys:',
-        result[app].restricted_monthly.length
-      );
+      // Useful to debug, Uncomment this to see the keys in the console.
+      // console.log(
+      //   '[keycard] getKeys: Success! Active keys:',
+      //   result[app].active.length,
+      //   'Restricted monthly keys:',
+      //   result[app].restricted_monthly.length
+      // );
       this.keys = result[app];
     }
   }
-  checkHeader(req, res, next) {
-    if (this.configured && !res.locals.ignoreKeycardCheck) {
-      const key = req.headers['x-api-key'] || '';
-      if (!key) return res.status(401).json({ error: 'missing x-api-key header' });
-      if (!this.keys.active.includes(key))
-        return res.status(401).json({ error: 'invalid key provided' });
-      if (this.keys.restricted_monthly.includes(key))
-        return res.status(429).json({ error: 'monthly limit reached' });
+
+  logReq(key: string): { valid: boolean; rateLimited?: boolean } {
+    if (key && this.configured) {
+      if (!this.keys.active.includes(key)) return { valid: false };
+      if (this.keys.restricted_monthly.includes(key)) return { valid: true, rateLimited: true };
 
       // Increase the total count for this key, but don't wait for it to finish.
-      this.callAPI('log_req', { key }).catch(console.log);
+      this.callAPI('log_req', { key }).catch(() => {});
     }
-    return next();
+    // If the keycard doesn't receive any keys (incase of a restart), we don't want to block the request.
+    return { valid: true, rateLimited: false };
   }
+
   private async callAPI(method: string, params: any = {}) {
     const { app, URL } = this;
-    const result = await fetch(`${URL}/`, {
+    const result = await fetch(URL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

@@ -1,12 +1,12 @@
 {
-  "name": "@snapshot-labs/keycard",
+  "name": "@snapshot-labs/keycard.js",
   "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint ./src --ext .ts --fix",
+    "lint": "eslint ./src ./test --ext .ts --fix",
     "prepare": "yarn build",
     "prepublishOnly": "yarn run lint",
     "test": "jest"
@@ -19,7 +19,7 @@
   },
   "prettier": "@snapshot-labs/prettier-config",
   "devDependencies": {
-    "@snapshot-labs/eslint-config": "^0.1.0-beta.7",
+    "@snapshot-labs/eslint-config": "^0.1.0-beta.9",
     "@snapshot-labs/prettier-config": "^0.1.0-beta.7",
     "@types/jest": "^27.5.0",
     "@types/node": "^18.14.0",

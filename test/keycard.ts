@@ -1,4 +1,4 @@
-import { Keycard } from '../src/index';
+import { Keycard } from '../src';
 
 const keycard = new Keycard({
   app: 'snapshot-hub',
