@@ -51,7 +51,6 @@ export class Keycard {
   private async getKeys(): Promise<void> {
     const { app } = this;
     const { result } = await this.callAPI('get_keys');
-
     if (result?.[app]) {
       // Useful to debug, Uncomment this to see the keys in the console.
       // console.log(
@@ -70,6 +69,7 @@ export class Keycard {
       if (this.keys.restricted_monthly.includes(key)) return { valid: true, rateLimited: true };
 
       // Increase the total count for this key, but don't wait for it to finish.
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       this.callAPI('log_req', { key }).catch(() => {});
     }
     // If the keycard doesn't receive any keys (incase of a restart), we don't want to block the request.
@@ -77,13 +77,13 @@ export class Keycard {
   }
 
   private async callAPI(method: string, params: any = {}) {
-    const { app, URL } = this;
+    const { URL, app, secret } = this;
     const result = await fetch(URL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        secret: this.secret || ''
+        secret: secret || ''
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
