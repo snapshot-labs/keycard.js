@@ -51,7 +51,6 @@ export class Keycard {
   private async getKeys(): Promise<void> {
     const { app } = this;
     const { result } = await this.callAPI('get_keys');
-
     if (result?.[app]) {
       // Useful to debug, Uncomment this to see the keys in the console.
       // console.log(
@@ -78,13 +77,13 @@ export class Keycard {
   }
 
   private async callAPI(method: string, params: any = {}) {
-    const { app, URL } = this;
+    const { URL, app, secret } = this;
     const result = await fetch(URL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        secret: this.secret || ''
+        secret: secret || ''
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
