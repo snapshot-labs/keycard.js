@@ -70,6 +70,7 @@ export class Keycard {
       if (this.keys.restricted_monthly.includes(key)) return { valid: true, rateLimited: true };
 
       // Increase the total count for this key, but don't wait for it to finish.
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       this.callAPI('log_req', { key }).catch(() => {});
     }
     // If the keycard doesn't receive any keys (incase of a restart), we don't want to block the request.
