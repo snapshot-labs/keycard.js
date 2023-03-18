@@ -48,7 +48,7 @@ export class Keycard {
     this.run();
   }
 
-  private async getKeys(): Promise<void> {
+  async getKeys(): Promise<AppKeys> {
     const { app } = this;
     const { result } = await this.callAPI('get_keys');
     if (result?.[app]) {
@@ -61,6 +61,7 @@ export class Keycard {
       // );
       this.keys = result[app];
     }
+    return this.keys;
   }
 
   logReq(key: string): { valid: boolean; rateLimited?: boolean } {

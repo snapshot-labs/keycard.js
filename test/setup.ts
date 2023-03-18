@@ -14,7 +14,12 @@ export const restHandlers = [
     if (req.body?.method === 'get_keys') {
       return res(ctx.status(200), ctx.json(result));
     }
-    return res(ctx.status(200), ctx.json(posts));
+    return res(
+      ctx.status(200),
+      ctx.json({
+        success: true
+      })
+    );
   })
 ];
 

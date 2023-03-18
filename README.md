@@ -23,6 +23,10 @@ To run the unit tests with coverage, open your terminal and run:
 npm run coverage
 ```
 
-### License
+### Test with local keycard API
 
-[MIT](LICENSE).
+To run the tests with a local keycard API, feel free to update src/keycard.ts file and open your terminal and run:
+
+```bash
+npm run test:local
+```
