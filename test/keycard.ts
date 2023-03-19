@@ -1,4 +1,5 @@
 import { Keycard } from '../src';
+import { sleep } from '../src/utils';
 
 (async () => {
   const keycard = new Keycard({
@@ -7,7 +8,7 @@ import { Keycard } from '../src';
     URL: 'http://localhost:3002'
   });
   console.log('Keycard:', keycard);
-  await new Promise(resolve => setTimeout(resolve, 5e3));
+  await sleep(1000);
   console.log('Configured:', keycard.configured);
   console.log('Keys:', await keycard.getKeys());
   console.log('logReq:', keycard.logReq('ABC'));
