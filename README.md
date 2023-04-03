@@ -1,12 +1,11 @@
-
-# keycard.js
+# Keycard.js
 
 ## Install
 
-To install keycard.js on Node.js, open your terminal and run:
+To install Keycard.js on Node.js, open your terminal and run:
 
 ```bash
-npm install @snapshot-labs/keycard.js
+npm install @snapshot-labs/keycard
 ```
 
 ## Tests and coverage
