@@ -1,5 +1,5 @@
 {
-  "name": "@snapshot-labs/keycard.js",
+  "name": "@snapshot-labs/keycard",
   "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
