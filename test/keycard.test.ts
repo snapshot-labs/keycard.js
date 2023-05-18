@@ -7,7 +7,7 @@ describe('Test keyCard if no secret is passed', () => {
     keycard = new Keycard({
       app: 'snapshot-hub',
       secret: '',
-      URL: 'http://localhost:3002'
+      URL: 'http://localhost:3007'
     });
     expect(keycard).toBeInstanceOf(Keycard);
   });
@@ -30,7 +30,7 @@ describe('Test keyCard if secret is passed', () => {
     keycard = new Keycard({
       app: 'snapshot-hub',
       secret: 'test',
-      URL: 'http://localhost:3002'
+      URL: 'http://localhost:3007'
     });
     expect(keycard).toBeInstanceOf(Keycard);
   });

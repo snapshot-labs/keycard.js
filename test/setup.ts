@@ -9,7 +9,7 @@ const result = {
 };
 
 export const restHandlers = [
-  rest.post('http://localhost:3002', (req: any, res: any, ctx) => {
+  rest.post('http://localhost:3007', (req: any, res: any, ctx) => {
     console.log('req', req.body);
     if (req.body?.method === 'get_keys') {
       return res(ctx.status(200), ctx.json(result));

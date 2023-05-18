@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import { sleep } from './utils';
 
-const API_URL = 'https://locahost:3002';
+const API_URL = 'https://locahost:3007';
 const API_INTERVAL = 30e3;
 
 type KeycardParams = {
