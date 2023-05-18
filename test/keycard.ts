@@ -5,7 +5,7 @@ import { sleep } from '../src/utils';
   const keycard = new Keycard({
     app: 'snapshot-hub',
     secret: '1234',
-    URL: 'http://localhost:3002'
+    URL: 'http://localhost:3007'
   });
   console.log('Keycard:', keycard);
   await sleep(1000);
