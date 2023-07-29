@@ -1,7 +1,7 @@
-name: Tests
+name: Lint
 on: [push]
 jobs:
-  build-test:
+  lint:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -13,9 +13,4 @@ jobs:
           node-version: ${{ matrix.version }}
           cache: 'yarn'
       - run: yarn
-      - run: yarn build
-      - run: yarn test:coverage
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      - run: yarn lint
