@@ -1,17 +1,20 @@
-name: Build and run tests
+name: Tests
 on: [push]
 jobs:
   build-test:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        version: [16, 18, 20]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: ${{ matrix.version }}
           cache: 'yarn'
       - run: yarn
       - run: yarn build
-      - run: yarn coverage
+      - run: yarn test:coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
