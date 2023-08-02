@@ -11,9 +11,8 @@
     "build": "tsc",
     "prepare": "yarn build",
     "prepublishOnly": "yarn run lint",
-    "test": "vitest",
-    "test:local": "ts-node test/keycard.ts",
-    "test:coverage": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "test:local": "ts-node test/keycard.ts"
   },
   "dependencies": {
     "cross-fetch": "^3.1.5"
