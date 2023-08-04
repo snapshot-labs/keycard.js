@@ -11,5 +11,5 @@ import { sleep } from '../src/utils';
   await sleep(1000);
   console.log('Configured:', keycard.configured);
   console.log('Keys:', await keycard.getKeys());
-  console.log('logReq:', keycard.logReq('ABC'));
+  console.log('logReq:', keycard.logReq('123456789'));
 })();

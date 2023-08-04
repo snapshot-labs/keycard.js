@@ -11,8 +11,12 @@ type KeycardParams = {
 };
 
 type AppKeys = {
+  // TODO: active and restricted_monthly will be deprecated in the future.
   active: string[];
   restricted_monthly: string[];
+  monthly_counts: Record<string, number>;
+  limits: Record<string, number>;
+  reset: number;
 };
 
 export class Keycard {
@@ -21,8 +25,12 @@ export class Keycard {
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
+    // TODO: active and restricted_monthly will be deprecated in the future.
     active: [],
-    restricted_monthly: []
+    restricted_monthly: [],
+    monthly_counts: {},
+    limits: {},
+    reset: 0
   };
 
   constructor(params: KeycardParams) {
@@ -34,6 +42,7 @@ export class Keycard {
       console.log('[keycard] No secret provided, skipping keycard.');
       return;
     }
+    console.log('[keycard] Initializing keycard...');
     this.run();
   }
 
@@ -52,29 +61,45 @@ export class Keycard {
     const { app } = this;
     const { result } = await this.callAPI('get_keys');
     if (result?.[app]) {
-      // Useful to debug, Uncomment this to see the keys in the console.
-      // console.log(
-      //   '[keycard] getKeys: Success! Active keys:',
-      //   result[app].active.length,
-      //   'Restricted monthly keys:',
-      //   result[app].restricted_monthly.length
-      // );
       this.keys = result[app];
     }
     return this.keys;
   }
 
-  logReq(key: string): { valid: boolean; rateLimited?: boolean } {
-    if (key && this.configured) {
-      if (!this.keys.active.includes(key)) return { valid: false };
-      if (this.keys.restricted_monthly.includes(key)) return { valid: true, rateLimited: true };
+  logReq(key: string): {
+    valid: boolean;
+    rateLimited?: boolean;
+    remaining?: number;
+    reset?: number;
+    limit?: number;
+  } {
+    if (!key) return { valid: false };
 
-      // Increase the total count for this key, but don't wait for it to finish.
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      this.callAPI('log_req', { key }).catch(() => {});
-    }
-    // If the keycard doesn't receive any keys (incase of a restart), we don't want to block the request.
-    return { valid: true, rateLimited: false };
+    const { monthly_counts: activeKeys, limits, reset } = this.keys;
+    const { secret } = this;
+    const limit = limits.monthly;
+
+    // If key is not in active keys, it's not valid.
+    if (activeKeys[key] === undefined) return { valid: false };
+
+    activeKeys[key]++;
+    let keyCount = activeKeys[key];
+
+    // Unlimited requests to snapshot APIs (example: if hub is sending requests to hub itself or to score-api)
+    const unlimitedRequests = key === secret;
+    if (unlimitedRequests) keyCount = 0;
+    // Increase the total count for this key, but don't wait for it to finish.
+    if (!unlimitedRequests) this.callAPI('log_req', { key }).catch();
+
+    const rateLimited = keyCount > limit;
+
+    return {
+      valid: true,
+      rateLimited,
+      remaining: rateLimited ? 0 : limits.monthly - keyCount,
+      reset: reset,
+      limit
+    };
   }
 
   private async callAPI(method: string, params: any = {}) {

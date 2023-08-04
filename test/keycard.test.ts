@@ -3,12 +3,13 @@ import { Keycard } from '../src';
 
 describe('Test keyCard if no secret is passed', () => {
   let keycard: any = undefined;
-  it('should create a new instance of Keycard', () => {
+  it('should create a new instance of Keycard', async () => {
     keycard = new Keycard({
       app: 'snapshot-hub',
       secret: '',
       URL: 'http://localhost:3007'
     });
+    await new Promise(resolve => setTimeout(resolve, 1000));
     expect(keycard).toBeInstanceOf(Keycard);
   });
 
@@ -26,12 +27,13 @@ describe('Test keyCard if no secret is passed', () => {
 
 describe('Test keyCard if secret is passed', () => {
   let keycard: any = undefined;
-  it('should create a new instance of Keycard', () => {
+  it('should create a new instance of Keycard', async () => {
     keycard = new Keycard({
       app: 'snapshot-hub',
       secret: 'test',
       URL: 'http://localhost:3007'
     });
+    await new Promise(resolve => setTimeout(resolve, 1000));
     expect(keycard).toBeInstanceOf(Keycard);
   });
 
@@ -39,7 +41,14 @@ describe('Test keyCard if secret is passed', () => {
     await keycard.getKeys();
     expect(keycard.keys).toMatchObject({
       active: ['1234', '12345'],
-      restricted_monthly: ['12345']
+      restricted_monthly: ['12345'],
+      monthly_counts: {
+        '1234': 10,
+        '12345': 1000
+      },
+      limits: {
+        monthly: 1000
+      }
     });
   });
 
