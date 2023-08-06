@@ -79,14 +79,15 @@ export class Keycard {
     const { secret } = this;
     const limit = limits.monthly;
 
+    // Unlimited requests to snapshot APIs (example: if hub is sending requests to hub itself or to score-api)
+    const unlimitedRequests = key === secret;
+
     // If key is not in active keys, it's not valid.
-    if (activeKeys[key] === undefined) return { valid: false };
+    if (!unlimitedRequests && activeKeys[key] === undefined) return { valid: false };
 
     activeKeys[key]++;
     let keyCount = activeKeys[key];
 
-    // Unlimited requests to snapshot APIs (example: if hub is sending requests to hub itself or to score-api)
-    const unlimitedRequests = key === secret;
     if (unlimitedRequests) keyCount = 0;
     // Increase the total count for this key, but don't wait for it to finish.
     if (!unlimitedRequests) this.callAPI('log_req', { key }).catch();
