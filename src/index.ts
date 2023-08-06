@@ -96,7 +96,7 @@ export class Keycard {
     return {
       valid: true,
       rateLimited,
-      remaining: rateLimited ? 0 : limits.monthly - keyCount,
+      remaining: Math.max(0, limits - keyCount),
       reset,
       limit
     };
