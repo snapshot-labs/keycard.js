@@ -97,7 +97,7 @@ export class Keycard {
       valid: true,
       rateLimited,
       remaining: rateLimited ? 0 : limits.monthly - keyCount,
-      reset: reset,
+      reset,
       limit
     };
   }
