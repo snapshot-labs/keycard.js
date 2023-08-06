@@ -96,7 +96,7 @@ export class Keycard {
     return {
       valid: true,
       rateLimited,
-      remaining: Math.max(0, limits - keyCount),
+      remaining: Math.max(0, limit - keyCount),
       reset,
       limit
     };
