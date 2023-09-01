@@ -1,4 +1,6 @@
 import fetch from 'cross-fetch';
+import http from 'node:http';
+import https from 'node:https';
 import { sleep } from './utils';
 
 const API_URL = 'https://locahost:3007';
@@ -18,6 +20,9 @@ type AppKeys = {
   limits: Record<string, number>;
   reset: number;
 };
+
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
 
 export class Keycard {
   app: string;
@@ -116,7 +121,10 @@ export class Keycard {
         jsonrpc: '2.0',
         method,
         params: { app, ...params }
-      })
+      }),
+      // @ts-ignore
+      agent: function (parsedURL) {
+      }
     });
     return result.json();
   }
