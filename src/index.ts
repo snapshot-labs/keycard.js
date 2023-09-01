@@ -124,6 +124,7 @@ export class Keycard {
       }),
       // @ts-ignore
       agent: function (parsedURL) {
+        return parsedURL.protocol === 'http:' ? httpAgent : httpsAgent;
       }
     });
     return result.json();
