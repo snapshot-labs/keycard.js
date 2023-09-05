@@ -90,7 +90,7 @@ export class Keycard {
 
     if (unlimitedRequests) keyCount = 0;
     // Increase the total count for this key, but don't wait for it to finish.
-    if (!unlimitedRequests) this.callAPI('log_req', { key }).catch();
+    if (!unlimitedRequests) this.callAPI('log_req', { key }).catch(console.log);
 
     const rateLimited = keyCount > limit;
 
