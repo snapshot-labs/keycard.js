@@ -1,4 +1,4 @@
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import http from 'node:http';
 import https from 'node:https';
 import { sleep } from './utils';
@@ -21,12 +21,10 @@ type AppKeys = {
   reset: number;
 };
 
-const httpAgent = new http.Agent({ keepAlive: true });
-const httpsAgent = new https.Agent({ keepAlive: true });
-
 export class Keycard {
   app: string;
   URL: string | URL;
+  agent?: http.Agent | https.Agent;
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
@@ -47,6 +45,13 @@ export class Keycard {
       console.log('[keycard] No secret provided, skipping keycard.');
       return;
     }
+
+    const agentOptions = { keepAlive: true };
+    this.agent =
+      new URL(this.URL).protocol === 'http:'
+        ? new http.Agent(agentOptions)
+        : new https.Agent(agentOptions);
+
     console.log('[keycard] Initializing keycard...');
     this.run();
   }
@@ -122,10 +127,7 @@ export class Keycard {
         method,
         params: { app, ...params }
       }),
-      // @ts-ignore
-      agent: function (parsedURL) {
-        return parsedURL.protocol === 'http:' ? httpAgent : httpsAgent;
-      }
+      agent: this.agent
     });
     return result.json();
   }
