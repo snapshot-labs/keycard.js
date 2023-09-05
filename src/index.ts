@@ -127,6 +127,7 @@ export class Keycard {
         method,
         params: { app, ...params }
       }),
+      timeout: 5e3,
       agent: this.agent
     });
     return result.json();
