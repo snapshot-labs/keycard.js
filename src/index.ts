@@ -1,4 +1,6 @@
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
+import http from 'node:http';
+import https from 'node:https';
 import { sleep } from './utils';
 
 const API_URL = 'https://locahost:3007';
@@ -22,6 +24,7 @@ type AppKeys = {
 export class Keycard {
   app: string;
   URL: string | URL;
+  agent?: http.Agent | https.Agent;
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
@@ -42,6 +45,13 @@ export class Keycard {
       console.log('[keycard] No secret provided, skipping keycard.');
       return;
     }
+
+    const agentOptions = { keepAlive: true };
+    this.agent =
+      new URL(this.URL).protocol === 'http:'
+        ? new http.Agent(agentOptions)
+        : new https.Agent(agentOptions);
+
     console.log('[keycard] Initializing keycard...');
     this.run();
   }
@@ -116,7 +126,9 @@ export class Keycard {
         jsonrpc: '2.0',
         method,
         params: { app, ...params }
-      })
+      }),
+      timeout: 5e3,
+      agent: this.agent
     });
     return result.json();
   }
