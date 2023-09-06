@@ -5,12 +5,10 @@ import { rest } from 'msw';
 const result = {
   result: {
     'snapshot-hub': {
-      active: ['1234', '12345'],
       monthly_counts: {
         '1234': 10,
         '12345': 1000
       },
-      restricted_monthly: ['12345'],
       limits: {
         monthly: 1000
       }

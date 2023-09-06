@@ -13,9 +13,6 @@ type KeycardParams = {
 };
 
 type AppKeys = {
-  // TODO: active and restricted_monthly will be deprecated in the future.
-  active: string[];
-  restricted_monthly: string[];
   monthly_counts: Record<string, number>;
   limits: Record<string, number>;
   reset: number;
@@ -28,9 +25,6 @@ export class Keycard {
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
-    // TODO: active and restricted_monthly will be deprecated in the future.
-    active: [],
-    restricted_monthly: [],
     monthly_counts: {},
     limits: {},
     reset: 0
