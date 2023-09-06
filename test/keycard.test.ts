@@ -47,7 +47,7 @@ describe('Test keyCard if secret is passed', () => {
       },
       limits: {
         monthly: 1000
-      },
+      }
     });
   });
 
