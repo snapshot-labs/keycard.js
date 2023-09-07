@@ -17,10 +17,11 @@ describe('Test keyCard if no secret is passed', () => {
     expect(keycard.configured).toBe(false);
   });
 
-  it('should return empty arrays for keys', () => {
+  it('should return empty objects for keys', () => {
     expect(keycard.keys).toMatchObject({
-      active: [],
-      restricted_monthly: []
+      limits: {},
+      monthly_counts: {},
+      reset: 0
     });
   });
 });
@@ -40,8 +41,6 @@ describe('Test keyCard if secret is passed', () => {
   it('getKeys should add keys to keycard.keys', async () => {
     await keycard.getKeys();
     expect(keycard.keys).toMatchObject({
-      active: ['1234', '12345'],
-      restricted_monthly: ['12345'],
       monthly_counts: {
         '1234': 10,
         '12345': 1000
