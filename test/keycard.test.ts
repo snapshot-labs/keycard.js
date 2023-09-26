@@ -19,7 +19,7 @@ describe('Test keyCard if no secret is passed', () => {
 
   it('should return empty objects for keys', () => {
     expect(keycard.keys).toMatchObject({
-      active_keys_counts: {},
+      key_counts: {},
       limits: {},
       reset: 0
     });
@@ -40,9 +40,8 @@ describe('Test keyCard if secret is passed', () => {
 
   it('getKeys should add keys to keycard.keys', async () => {
     await keycard.getKeys();
-    console.log('Keys:', keycard.keys);
     expect(keycard.keys).toMatchObject({
-      active_keys_counts: {
+      key_counts: {
         '1234': {
           level: 'user',
           month: 10

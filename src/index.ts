@@ -13,7 +13,7 @@ type KeycardParams = {
 };
 
 type AppKeys = {
-  active_keys_counts: Record<string, { level: string; month: number }>;
+  key_counts: Record<string, { level: string; month: number }>;
   limits: Record<string, number>;
   reset: number;
 };
@@ -25,7 +25,7 @@ export class Keycard {
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
-    active_keys_counts: {},
+    key_counts: {},
     limits: {},
     reset: 0
   };
@@ -79,7 +79,7 @@ export class Keycard {
   } {
     if (!key) return { valid: false };
 
-    const { active_keys_counts: activeKeys, limits, reset } = this.keys;
+    const { key_counts: activeKeys, limits, reset } = this.keys;
     const { secret } = this;
     const keyData = activeKeys[key];
 

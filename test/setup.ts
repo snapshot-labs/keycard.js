@@ -5,7 +5,7 @@ import { rest } from 'msw';
 const result = {
   result: {
     'snapshot-hub': {
-      active_keys_counts: {
+      key_counts: {
         '1234': {
           level: 'user',
           month: 10
