@@ -5,12 +5,24 @@ import { rest } from 'msw';
 const result = {
   result: {
     'snapshot-hub': {
+      active_keys_counts: {
+        '1234': {
+          level: 'user',
+          month: 10
+        },
+        '12345': {
+          level: 'user',
+          month: 1000
+        }
+      },
       monthly_counts: {
         '1234': 10,
         '12345': 1000
       },
       limits: {
-        monthly: 1000
+        monthly: 1000,
+        user_monthly: 1000,
+        integrator_monthly: 1000
       }
     }
   }
