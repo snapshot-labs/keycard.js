@@ -1,0 +1,8 @@
+name: Bump version
+
+on: [push]
+
+jobs:
+  lint:
+    uses: snapshot-labs/actions/.github/workflows/bump-version.yml@inject-dotenv-content
+    secrets: inherit
