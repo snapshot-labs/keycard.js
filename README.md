@@ -29,5 +29,3 @@ To run the tests with a local keycard API, feel free to update src/keycard.ts fi
 ```bash
 npm run test:local
 ```
-
--- test 1
