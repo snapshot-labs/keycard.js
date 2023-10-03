@@ -1,0 +1,11 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  release:
+    uses: snapshot-labs/actions/.github/workflows/release.yml@main
+    secrets: inherit
