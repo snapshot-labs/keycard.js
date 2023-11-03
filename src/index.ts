@@ -13,8 +13,8 @@ type KeycardParams = {
 };
 
 type AppKeys = {
-  key_counts: Record<string, { level: string; month: number }>;
-  limits: Record<string, number>;
+  key_counts: Record<string, { tier: string; month: number }>;
+  limits: Record<string, { monthly: number }>;
   reset: number;
 };
 
@@ -96,7 +96,7 @@ export class Keycard {
     // Increase the total count for this key, but don't wait for it to finish.
     if (!unlimitedRequests) this.callAPI('log_req', { key }).catch(console.error);
 
-    const limit = limits[`${keyData.level}_monthly`];
+    const limit = limits[keyData.tier].monthly;
     const rateLimited = keyCount > limit;
     return {
       valid: true,

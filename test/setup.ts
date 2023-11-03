@@ -2,27 +2,26 @@ import { afterAll, afterEach, beforeAll } from 'vitest';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
-const result = {
+export const exampleResponse = {
   result: {
     'snapshot-hub': {
       key_counts: {
         '1234': {
-          level: 'user',
+          tier: 0,
           month: 10
         },
         '12345': {
-          level: 'user',
-          month: 1000
+          tier: 1,
+          month: 2000
         }
       },
-      monthly_counts: {
-        '1234': 10,
-        '12345': 1000
-      },
       limits: {
-        monthly: 1000,
-        user_monthly: 1000,
-        integrator_monthly: 1000
+        '0': {
+          monthly: 1000
+        },
+        '1': {
+          monthly: 2000
+        }
       }
     }
   }
@@ -32,7 +31,7 @@ export const restHandlers = [
   rest.post('http://localhost:3007', (req: any, res: any, ctx) => {
     console.log('req', req.body);
     if (req.body?.method === 'get_keys') {
-      return res(ctx.status(200), ctx.json(result));
+      return res(ctx.status(200), ctx.json(exampleResponse));
     }
     return res(
       ctx.status(200),
