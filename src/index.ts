@@ -13,8 +13,8 @@ type KeycardParams = {
 };
 
 type AppKeys = {
-  monthly_counts: Record<string, number>;
-  limits: Record<string, number>;
+  key_counts: Record<string, { tier: string; month: number }>;
+  limits: Record<string, { monthly: number }>;
   reset: number;
 };
 
@@ -25,7 +25,7 @@ export class Keycard {
   configured = false;
   private secret: string | undefined;
   private keys: AppKeys = {
-    monthly_counts: {},
+    key_counts: {},
     limits: {},
     reset: 0
   };
@@ -79,25 +79,25 @@ export class Keycard {
   } {
     if (!key) return { valid: false };
 
-    const { monthly_counts: activeKeys, limits, reset } = this.keys;
+    const { key_counts: activeKeys, limits, reset } = this.keys;
     const { secret } = this;
-    const limit = limits.monthly;
+    const keyData = activeKeys[key];
 
     // Unlimited requests to snapshot APIs (example: if hub is sending requests to hub itself or to score-api)
     const unlimitedRequests = key === secret;
 
     // If key is not in active keys, it's not valid.
-    if (!unlimitedRequests && activeKeys[key] === undefined) return { valid: false };
+    if (!unlimitedRequests && keyData === undefined) return { valid: false };
 
-    activeKeys[key]++;
-    let keyCount = activeKeys[key];
+    keyData.month++;
+    let keyCount = keyData.month;
 
     if (unlimitedRequests) keyCount = 0;
     // Increase the total count for this key, but don't wait for it to finish.
     if (!unlimitedRequests) this.callAPI('log_req', { key }).catch(console.error);
 
+    const limit = limits[keyData.tier].monthly;
     const rateLimited = keyCount > limit;
-
     return {
       valid: true,
       rateLimited,

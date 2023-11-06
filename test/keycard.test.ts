@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Keycard } from '../src';
+import { exampleResponse } from './setup';
 
 describe('Test keyCard if no secret is passed', () => {
   let keycard: any = undefined;
@@ -19,8 +20,8 @@ describe('Test keyCard if no secret is passed', () => {
 
   it('should return empty objects for keys', () => {
     expect(keycard.keys).toMatchObject({
+      key_counts: {},
       limits: {},
-      monthly_counts: {},
       reset: 0
     });
   });
@@ -40,15 +41,7 @@ describe('Test keyCard if secret is passed', () => {
 
   it('getKeys should add keys to keycard.keys', async () => {
     await keycard.getKeys();
-    expect(keycard.keys).toMatchObject({
-      monthly_counts: {
-        '1234': 10,
-        '12345': 1000
-      },
-      limits: {
-        monthly: 1000
-      }
-    });
+    expect(keycard.keys).toMatchObject(exampleResponse.result['snapshot-hub']);
   });
 
   it('should return true for configured value', () => {

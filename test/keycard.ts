@@ -1,3 +1,5 @@
+// Usage: ts-node test/keycard.ts
+
 import { Keycard } from '../src';
 import { sleep } from '../src/utils';
 
