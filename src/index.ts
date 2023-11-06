@@ -102,14 +102,13 @@ export class Keycard {
     this.callAPI('log_req', { key }).catch(console.error);
 
     keyData.month++;
-    const keyCount = keyData.month;
 
     const limit = limits[keyData.tier].monthly;
-    const rateLimited = keyCount > limit;
+    const rateLimited = keyData.month > limit;
     return {
       valid: true,
       rateLimited,
-      remaining: Math.max(0, limit - keyCount),
+      remaining: Math.max(0, limit - keyData.month),
       reset,
       limit
     };
